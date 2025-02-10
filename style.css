@@ -1,0 +1,18 @@
+#gameContainer{
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: 40%;
+  justify-content: center;
+  
+}
+#gameBoard{
+  border: 4px solid;
+}
+#score{
+  font-size: 2em;
+}
+#resetButton{
+  width: 30%;
+  align-self: center;
+}
