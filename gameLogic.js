@@ -16,6 +16,7 @@ let Xfood;
 let yfood;
 let score = 0;
 let snake = [
+  {x:unitSize*4, y:0},
   {x:unitSize*3, y:0},
   {x:unitSize*2, y:0},
   {x:unitSize, y:0},
@@ -43,7 +44,7 @@ function nextTick(){
       drawSnake();
       checkGameOver();
       nextTick();
-    }, 100 /*speed number*/)
+    }, 200 /*speed number*/)
   }else{
     displayGameOver();
   }
@@ -89,36 +90,36 @@ function drawSnake(){
 function changeDirection(event){
   const keyPressed = event.keyCode;
 
-  const DOWN = 37;
+  const LEFT = 37;
   const UP = 38;
   const RIGHT = 39;
-  const LEFT = 40;
+  const DOWN = 40;
 
   const goingUp = (yVelocity == -unitSize);
   const goingDown = (yVelocity == unitSize);
   const goingRight = (xVelocity == unitSize);
-  const goingLeft = (yVelocity == -unitSize);
+  const goingLeft = (xVelocity == -unitSize);
 
   switch(true){
-    case(keyPressed == LEFT && !goingRight):
-      xVelocity = -unitSize;
-      yVelocity = 0;
-      break;
+      case(keyPressed == LEFT && !goingRight):
+        xVelocity = -unitSize;
+        yVelocity = 0;
+        break;
 
       case(keyPressed == RIGHT && !goingLeft):
-      xVelocity = unitSize;
-      yVelocity = 0;
-      break;
+        xVelocity = unitSize;
+        yVelocity = 0;
+        break;
 
-      case(keyPressed == LEFT && !goingRight):
-      xVelocity = -unitSize;
-      yVelocity = 0;
-      break;
+      case(keyPressed == UP && !goingDown):
+        xVelocity = 0;
+        yVelocity = -unitSize;
+        break;
 
-      case(keyPressed == LEFT && !goingRight):
-      xVelocity = -unitSize;
-      yVelocity = 0;
-      break;
+      case(keyPressed == DOWN && !goingUp):
+        xVelocity = 0;
+        yVelocity = unitSize;
+        break;
 
 
 
