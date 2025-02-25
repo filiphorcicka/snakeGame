@@ -4,11 +4,13 @@ const scoreText = document.querySelector("#score");
 const resetButton = document.querySelector("#resetButton");
 const gameWidth = gameBoard.width;
 const gameHeight = gameBoard.height;
-const boardBackground = "purple";
-const snakeColor = "lightGreen";
+const boardBackground = "magenta";
+const snakeColor = "blue";
+const snakeHeadColor = "lightGreen"
 const snakeBorder = "black";
 const foodColor = "red";
 const unitSize = 25;
+let gameLoop;
 let running = false;
 let xVelocity = unitSize;
 let yVelocity = 0;
@@ -35,37 +37,79 @@ function gameStart(){
   drawFood();
   nextTick();
 };
-function nextTick(){
-  if(running){
-    setTimeout(()=>{
+function nextTick() {
+  if (running) {
+    // Clear any previous loop before starting a new one
+    clearTimeout(gameLoop);
+    gameLoop = setTimeout(function () {
       clearBoard();
+      drawGrid();
       drawFood();
       moveSnake();
       drawSnake();
       checkGameOver();
       nextTick();
-    }, 200 /*speed number*/)
-  }else{
+    }, 100); // Game speed
+  } else {
     displayGameOver();
   }
-};
+}
 function clearBoard(){
   ctx.fillStyle = boardBackground;
   ctx.fillRect(0, 0, gameWidth, gameHeight);
 
 };
-function createFood(){
-  function randomFood(min, max){
-    const rndmNum = Math.round((Math.random() * (max-min) + min)/unitSize) * unitSize; 
-    return rndmNum;
+function drawGrid() {
+  ctx.strokeStyle = "black"; // Grid line color
+  ctx.lineWidth = 0.1; // Line thickness
+
+  // Draw vertical grid lines
+  for (let x = 0; x <= gameWidth; x += unitSize) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, gameHeight);
+    ctx.stroke();
   }
-  Xfood = randomFood(0, gameWidth-unitSize);
-  Yfood = randomFood(0, gameWidth-unitSize);
+
+  // Draw horizontal grid lines
+  for (let y = 0; y <= gameHeight; y += unitSize) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(gameWidth, y);
+    ctx.stroke();
+  }
+}
+function createFood(){
+  function randomFood(min, max) {
+    return Math.round((Math.random() * (max - min) + min) / unitSize) * unitSize;
+  }
+
+  let foodCreated = false;
+  while (!foodCreated) {
+    Xfood = randomFood(0, gameWidth - unitSize);
+    Yfood = randomFood(0, gameHeight - unitSize);
+
+    // Store the result of the check
+    let foodOnSnake = snake.some(function (segment) {
+      return segment.x === Xfood && segment.y === Yfood;
+    });
+
+    // If food is not on the snake, set foodCreated to true
+    if (!foodOnSnake) {
+      foodCreated = true;
+    }
+  }
 };
-function drawFood(){
+function drawFood() {
+  // Draw the food
   ctx.fillStyle = foodColor;
-  ctx.fillRect(Xfood, Yfood, unitSize, unitSize); 
-};
+  ctx.fillRect(Xfood, Yfood, unitSize, unitSize);
+
+  // Add a border around the food
+  ctx.strokeStyle = snakeBorder; // Border color
+  ctx.lineWidth = 1; // Border thickness
+  ctx.strokeRect(Xfood, Yfood, unitSize, unitSize);
+}
 function moveSnake(){
   const head = {x: snake[0].x + xVelocity,
                 y: snake[0].y + yVelocity};
@@ -79,14 +123,63 @@ function moveSnake(){
     snake.pop();
   }
 };
-function drawSnake(){
-  ctx.fillStyle = snakeColor;
-  ctx.strokeStyle = snakeBorder;
-  snake.forEach(snakePart => {
+function drawSnake() {
+  snake.forEach(function (snakePart, index) {
+    if (index === 0) {
+      ctx.fillStyle = snakeHeadColor;
+    } else {
+      ctx.fillStyle = snakeColor;
+    }
+
+    // Draw the snake part
+    ctx.strokeStyle = snakeBorder;
     ctx.fillRect(snakePart.x, snakePart.y, unitSize, unitSize);
-    ctx.strokeRect(snakePart.x, snakePart.y, unitSize, unitSize); 
-  })
-};
+    ctx.strokeRect(snakePart.x, snakePart.y, unitSize, unitSize);
+
+    // Draw eyes only on the head
+    if (index === 0) {
+      drawEyes(snakePart);
+    }
+  });
+}
+function drawEyes(head) {
+  ctx.fillStyle = snakeColor; // Eye color
+  const eyeSize = unitSize / 5; // Eye size
+
+  let eye1X, eye1Y, eye2X, eye2Y;
+
+  // Position eyes based on snake's direction
+  if (xVelocity > 0) { // Moving right
+    eye1X = head.x + unitSize - eyeSize * 2;
+    eye1Y = head.y + eyeSize;
+    eye2X = head.x + unitSize - eyeSize * 2;
+    eye2Y = head.y + unitSize - eyeSize * 2;
+  } else if (xVelocity < 0) { // Moving left
+    eye1X = head.x + eyeSize;
+    eye1Y = head.y + eyeSize;
+    eye2X = head.x + eyeSize;
+    eye2Y = head.y + unitSize - eyeSize * 2;
+  } else if (yVelocity > 0) { // Moving down
+    eye1X = head.x + eyeSize;
+    eye1Y = head.y + unitSize - eyeSize * 2;
+    eye2X = head.x + unitSize - eyeSize * 2;
+    eye2Y = head.y + unitSize - eyeSize * 2;
+  } else if (yVelocity < 0) { // Moving up
+    eye1X = head.x + eyeSize;
+    eye1Y = head.y + eyeSize;
+    eye2X = head.x + unitSize - eyeSize * 2;
+    eye2Y = head.y + eyeSize;
+  }
+
+  // Draw two eyes
+  ctx.beginPath();
+  ctx.arc(eye1X, eye1Y, eyeSize, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(eye2X, eye2Y, eyeSize, 0, Math.PI * 2);
+  ctx.fill();
+}
 function changeDirection(event){
   const keyPressed = event.keyCode;
 
@@ -126,6 +219,48 @@ function changeDirection(event){
 
   }
 };
-function checkGameOver(){};
-function displayGameOver(){};
-function resetGame(){}; 
+function checkGameOver(){
+  switch(true){
+    case(snake[0].x < 0):
+      running = false;
+      break;
+
+    case(snake[0].x >= gameWidth):
+      running = false;
+      break;
+
+    case(snake[0].y < 0):
+      running = false;
+      break;
+
+    case(snake[0].y >= gameHeight):
+      running = false;
+      break;
+    
+  }
+  for(let i = 1; i < snake.length; i++){
+    if(snake[i].x == snake[0].x && snake[i].y == snake[0].y){
+      running = false;
+    }
+  }
+};
+function displayGameOver(){
+  ctx.font = "50px MV Boli"  //change later
+  ctx.fillStyle = "black";
+  ctx.textAlign = "center";
+  ctx.fillText("GAME OVER!", gameWidth / 2, gameHeight / 2)
+};
+function resetGame(){
+  score = 0;
+  xVelocity = unitSize;
+  yVelocity = 0;
+  snake = [
+    {x:unitSize*4, y:0},
+    {x:unitSize*3, y:0},
+    {x:unitSize*2, y:0},
+    {x:unitSize, y:0},
+    {x:0, y:0}
+  ]
+  running = false;
+  gameStart();
+}; 
