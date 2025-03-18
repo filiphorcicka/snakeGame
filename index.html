@@ -1,17 +1,65 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SnakeGame</title>
+  <title>Neon Snake</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐍</text></svg>">
 </head>
 <body>
   <div id="gameContainer">
-    <canvas id="gameBoard" width="500" height="500"></canvas>
-    <div id="score">0</div>
-    <button id="resetButton">reset</button>
+    <h1 class="gameTitle">Neon Snake</h1>
+    
+    <!-- Game board with overlay for game over -->
+    <div style="position: relative;">
+      <canvas id="gameBoard" width="500" height="500"></canvas>
+      <div id="gameOverOverlay" class="gameOverOverlay">
+        <h2 class="gameOverText">GAME OVER!</h2>
+        <p class="finalScore">Score: <span id="finalScore">0</span></p>
+        <button class="playAgainBtn">Play Again</button>
+      </div>
+    </div>
+    
+    <!-- Score display with label -->
+    <div class="scoreContainer">
+      <span class="scoreLabel">SCORE:</span>
+      <div id="score">0</div>
+    </div>
+    
+    <!-- Controls container -->
+    <div class="controlsContainer">
+      <button id="resetButton">Reset Game</button>
+      <button id="soundToggle">🔊 Sound ON</button>
+      <button id="themeToggle"><span class="theme-icon">🌙</span> Dark</button>
+    </div>
+    
+    <!-- Touch Controls for Mobile -->
+    <div class="touchControls">
+      <div id="upBtn" class="touchBtn">↑</div>
+      <div id="leftBtn" class="touchBtn">←</div>
+      <div id="rightBtn" class="touchBtn">→</div>
+      <div id="downBtn" class="touchBtn">↓</div>
+    </div>
+    
+    <!-- Game instructions -->
+    <div class="instructions">
+      <p>Use arrow keys or WASD to control the snake.</p>
+      <p>Press SPACE to pause the game.</p>
+      <div class="keyboardControls">
+        <div class="key">↑</div>
+        <div style="display: flex; flex-direction: row;">
+          <div class="key">←</div>
+          <div class="key">↓</div>
+          <div class="key">→</div>
+        </div>
+      </div>
+    </div>
   </div>
+  
   <script src="gameLogic.js"></script>  
 </body>
 </html>
