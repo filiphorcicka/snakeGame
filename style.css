@@ -211,25 +211,6 @@ body {
   transition: color 0.3s ease, background-color 0.3s ease;
 }
 
-.keyboardControls {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-  gap: 5px;
-}
-
-.key {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 40px;
-  height: 40px;
-  background-color: var(--key-bg);
-  border-radius: 5px;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-}
-
 /* Mobile optimization */
 @media (max-width: 600px) {
   #gameContainer {

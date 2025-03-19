@@ -3,18 +3,15 @@ const gameBoard = document.querySelector("#gameBoard");
 const ctx = gameBoard.getContext("2d"); 
 const scoreText = document.querySelector("#score");
 const resetButton = document.querySelector("#resetButton");
+const soundToggleBtn = document.querySelector("#soundToggle");
+const themeToggleBtn = document.querySelector("#themeToggle");
 const gameWidth = gameBoard.width;
 const gameHeight = gameBoard.height;
-
-// Game settings - enhanced visuals
-const boardBackground = "#0F0F1B";
-const gridColor = "rgba(125, 249, 255, 0.1)";
-const snakeBodyColor = "#50C5B7";
-const snakeHeadColor = "#7DF9FF";
-const snakeBorder = "#084C61";
-const foodColor = "#FF6B6B";
-const foodGlowColor = "rgba(255, 107, 107, 0.7)";
 const unitSize = 25;
+
+// Theme variables
+let currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+let boardBackground, gridColor, snakeBodyColor, snakeHeadColor, snakeBorder, foodColor, foodGlowColor;
 
 // Game state variables
 let gameLoop;
@@ -35,7 +32,7 @@ let snake = [
 ];
 
 // Sound effects
-let eatSound, gameOverSound, moveSound;
+let eatSound, gameOverSound;
 let soundEnabled = true;
 
 // Touch controls for mobile
@@ -50,19 +47,118 @@ if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
 // Event listeners
 window.addEventListener("keydown", changeDirection);
 resetButton.addEventListener("click", resetGame);
+soundToggleBtn.addEventListener("click", toggleSound);
+themeToggleBtn.addEventListener("click", toggleTheme);
 document.addEventListener("DOMContentLoaded", setupGame);
+
+// Function to set game colors based on current theme
+function updateGameColors() {
+  if (currentTheme === 'dark') {
+    // Dark theme colors
+    boardBackground = "#0F0F1B";
+    gridColor = "rgba(125, 249, 255, 0.1)";
+    snakeBodyColor = "#50C5B7";
+    snakeHeadColor = "#7DF9FF";
+    snakeBorder = "#084C61";
+    foodColor = "#FF6B6B";
+    foodGlowColor = "rgba(255, 107, 107, 0.7)";
+  } else {
+    // Light theme colors
+    boardBackground = "#ffffff";
+    gridColor = "rgba(128, 0, 128, 0.1)";
+    snakeBodyColor = "#9370DB";
+    snakeHeadColor = "#8A2BE2";
+    snakeBorder = "#5E35B1";
+    foodColor = "#D8336E";
+    foodGlowColor = "rgba(216, 51, 110, 0.7)";
+  }
+  
+  // If the game is running, immediately redraw with new colors
+  if (gameBoard) {
+    clearBoard();
+    drawGrid();
+    if (typeof Xfood !== 'undefined' && typeof Yfood !== 'undefined') {
+      drawFood();
+    }
+    if (snake && snake.length > 0) {
+      drawSnake();
+    }
+    
+    // Redraw game state overlays if needed
+    if (paused) {
+      displayPaused();
+    } else if (!running && document.readyState === 'complete') {
+      displayGameOver();
+    }
+  }
+}
+
+// Theme toggle function
+function toggleTheme() {
+  // Switch theme
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  // Update HTML attribute
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  
+  // Update colors
+  updateGameColors();
+  
+  // Update button text
+  if (currentTheme === 'dark') {
+    themeToggleBtn.innerHTML = '<span class="theme-icon">🌙</span> Dark';
+  } else {
+    themeToggleBtn.innerHTML = '<span class="theme-icon">☀️</span> Light';
+  }
+  
+  // Redraw the game elements with new colors immediately
+  clearBoard();
+  drawGrid();
+  drawFood();
+  drawSnake();
+  
+  // If game is over, redraw game over screen
+  if (!running && !paused) {
+    displayGameOver();
+  }
+  
+  // If game is paused, redraw pause screen
+  if (paused) {
+    displayPaused();
+  }
+}
+
+// Sound toggle function
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  
+  // Toggle muted class for visual indication
+  if (soundEnabled) {
+    soundToggleBtn.textContent = "🔊 Sound ON";
+    soundToggleBtn.classList.remove("muted");
+  } else {
+    soundToggleBtn.textContent = "🔇 Sound OFF";
+    soundToggleBtn.classList.add("muted");
+  }
+}
 
 // Game initialization
 function setupGame() {
-  // Create audio elements
-  eatSound = new Audio('https://assets.mixkit.co/active_storage/sfx/1561/1561-preview.mp3');
-  gameOverSound = new Audio('https://assets.mixkit.co/active_storage/sfx/270/270-preview.mp3');
-  moveSound = new Audio('https://assets.mixkit.co/active_storage/sfx/350/350-preview.mp3');
+  // Set initial theme colors
+  updateGameColors();
   
-  // Adjust sounds volume
+  // Create audio elements
+  // Swapped eat and game over sounds as requested
+  eatSound = new Audio('https://assets.mixkit.co/active_storage/sfx/270/270-preview.mp3');
+  gameOverSound = new Audio('https://assets.mixkit.co/active_storage/sfx/240/240-preview.mp3');
+  
+  // Adjust sounds volume - lower volume for better game experience
   eatSound.volume = 0.3;
-  gameOverSound.volume = 0.3;
-  moveSound.volume = 0.1;
+  gameOverSound.volume = 0.2;
+  
+  // Pre-load sounds to prevent delay on first play
+  eatSound.load();
+  gameOverSound.load();
   
   // Start game
   gameStart();
@@ -91,11 +187,19 @@ function nextTick() {
       moveSnake();
       drawSnake();
       checkGameOver();
-      nextTick();
+      
+      // Only continue the game loop if game isn't over
+      if (running) {
+        nextTick();
+      } else {
+        displayGameOver(); // Show game over screen if game ended
+      }
     }, speed); // Game speed - decreases as score increases
-  } else if (paused) {
+  } else if (paused && running) {
+    // Only show pause screen if the game is still running
     displayPaused();
-  } else {
+  } else if (!running) {
+    // If game is over, show game over regardless of pause state
     displayGameOver();
   }
 }
@@ -103,11 +207,11 @@ function nextTick() {
 function clearBoard() {
   ctx.fillStyle = boardBackground;
   ctx.fillRect(0, 0, gameWidth, gameHeight);
+}
 
-};
 function drawGrid() {
-  ctx.strokeStyle = "black"; // Grid line color
-  ctx.lineWidth = 0.1; // Line thickness
+  ctx.strokeStyle = gridColor;
+  ctx.lineWidth = 0.5;
 
   // Draw vertical grid lines
   for (let x = 0; x <= gameWidth; x += unitSize) {
@@ -186,15 +290,35 @@ function moveSnake() {
   
   // Check if snake ate food
   if (snake[0].x === Xfood && snake[0].y === Yfood) {
-    // Play eat sound
-    if (soundEnabled) {
-      eatSound.currentTime = 0;
-      eatSound.play().catch(e => console.log("Audio play error:", e));
+    // Play eat sound with error handling
+    if (soundEnabled && eatSound) {
+      try {
+        // Reset sound to start (handles rapid eating)
+        eatSound.pause();
+        eatSound.currentTime = 0;
+        
+        // Play the eating sound with a promise to catch any errors
+        let playPromise = eatSound.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log("Audio play error:", error);
+          });
+        }
+      } catch (e) {
+        console.log("Error with audio playback:", e);
+      }
     }
     
     // Increase score
     score++;
     scoreText.textContent = score;
+    
+    // Update final score display for game over overlay
+    const finalScoreElement = document.getElementById("finalScore");
+    if (finalScoreElement) {
+      finalScoreElement.textContent = score;
+    }
     
     // Speed up the game every 5 points
     if (score % 5 === 0 && speed > 50) {
@@ -204,12 +328,6 @@ function moveSnake() {
     createFood();
   } else {
     snake.pop();
-    
-    // Play move sound occasionally (not every move to avoid noise)
-    if (soundEnabled && Math.random() < 0.1) {
-      moveSound.currentTime = 0;
-      moveSound.play().catch(e => console.log("Audio play error:", e));
-    }
   }
 }
 
@@ -321,6 +439,11 @@ function changeDirection(event) {
   // Spacebar for pause
   const SPACE = 32;
 
+  // Prevent default scrolling behavior for arrow keys and space
+  if ([LEFT, UP, RIGHT, DOWN, SPACE].includes(keyPressed)) {
+    event.preventDefault();
+  }
+
   const goingUp = (yVelocity == -unitSize);
   const goingDown = (yVelocity == unitSize);
   const goingRight = (xVelocity == unitSize);
@@ -412,7 +535,7 @@ function togglePause() {
 
 function displayPaused() {
   ctx.font = "bold 40px Poppins";
-  ctx.fillStyle = "#7DF9FF";
+  ctx.fillStyle = snakeHeadColor;
   ctx.textAlign = "center";
   ctx.fillText("PAUSED", gameWidth / 2, gameHeight / 2);
   ctx.font = "20px Poppins";
@@ -420,48 +543,66 @@ function displayPaused() {
 }
 
 function checkGameOver() {
+  let gameOverDetected = false;
+  
   // Check wall collision with boundary effect
   switch(true) {
     case(snake[0].x < 0):
-      running = false;
+      gameOverDetected = true;
       break;
 
     case(snake[0].x >= gameWidth):
-      running = false;
+      gameOverDetected = true;
       break;
 
     case(snake[0].y < 0):
-      running = false;
+      gameOverDetected = true;
       break;
 
     case(snake[0].y >= gameHeight):
-      running = false;
+      gameOverDetected = true;
       break;
   }
   
   // Check self collision
   for(let i = 1; i < snake.length; i++) {
     if(snake[i].x === snake[0].x && snake[i].y === snake[0].y) {
-      running = false;
+      gameOverDetected = true;
     }
   }
   
-  // Play game over sound
-  if (!running && soundEnabled) {
-    gameOverSound.play().catch(e => console.log("Audio play error:", e));
+  if (gameOverDetected) {
+    running = false;
+    paused = false; // Ensure we're not paused when game is over
+    
+    // Play game over sound with error handling
+    if (soundEnabled && gameOverSound) {
+      try {
+        gameOverSound.currentTime = 0;
+        let playPromise = gameOverSound.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log("Audio play error:", error);
+          });
+        }
+      } catch (e) {
+        console.log("Error with audio playback:", e);
+      }
+    }
   }
 }
 
 function displayGameOver() {
   // Show game over text
   ctx.font = "bold 50px Poppins";
-  ctx.fillStyle = "#FF5555";
+  ctx.fillStyle = foodColor;
   ctx.textAlign = "center";
   ctx.fillText("GAME OVER!", gameWidth / 2, gameHeight / 2 - 20);
   
   // Show score
   ctx.font = "30px Poppins";
-  ctx.fillStyle = "#7DF9FF";
+  ctx.fillStyle = snakeHeadColor;
   ctx.fillText(`Score: ${score}`, gameWidth / 2, gameHeight / 2 + 30);
   
   // Show restart instruction
