@@ -22,6 +22,7 @@ let yVelocity = 0;
 let Xfood;
 let Yfood;
 let score = 0;
+let highScores = [];
 let speed = 100; // Initial game speed
 let snake = [
   {x:unitSize*4, y:0},
@@ -50,6 +51,31 @@ resetButton.addEventListener("click", resetGame);
 soundToggleBtn.addEventListener("click", toggleSound);
 themeToggleBtn.addEventListener("click", toggleTheme);
 document.addEventListener("DOMContentLoaded", setupGame);
+
+// Leaderboard modal functionality
+const viewLeaderboardBtn = document.getElementById("viewLeaderboard");
+const leaderboardModal = document.getElementById("leaderboardModal");
+const closeModalBtn = document.querySelector(".close-modal");
+
+if (viewLeaderboardBtn) {
+  viewLeaderboardBtn.addEventListener("click", () => {
+    updateLeaderboard(); // Refresh leaderboard data
+    leaderboardModal.style.display = "block";
+  });
+}
+
+if (closeModalBtn) {
+  closeModalBtn.addEventListener("click", () => {
+    leaderboardModal.style.display = "none";
+  });
+}
+
+// Close modal when clicking outside of it
+window.addEventListener("click", (event) => {
+  if (event.target === leaderboardModal) {
+    leaderboardModal.style.display = "none";
+  }
+});
 
 // Function to set game colors based on current theme
 function updateGameColors() {
@@ -144,6 +170,9 @@ function toggleSound() {
 
 // Game initialization
 function setupGame() {
+  // Load high scores from local storage
+  loadHighScores();
+  
   // Set initial theme colors
   updateGameColors();
   
@@ -160,8 +189,93 @@ function setupGame() {
   eatSound.load();
   gameOverSound.load();
   
+  // Update leaderboard display
+  updateLeaderboard();
+  
   // Start game
   gameStart();
+}
+
+// Load high scores from local storage
+function loadHighScores() {
+  const savedScores = localStorage.getItem('snakeHighScores');
+  if (savedScores) {
+    highScores = JSON.parse(savedScores);
+  } else {
+    highScores = [];
+  }
+  
+  // Update high score display
+  updateHighScoreDisplay();
+}
+
+// Save high scores to local storage
+function saveHighScores() {
+  localStorage.setItem('snakeHighScores', JSON.stringify(highScores));
+}
+
+// Update the high score display
+function updateHighScoreDisplay() {
+  const highScoreElement = document.getElementById('highScore');
+  if (!highScoreElement) return;
+  
+  // Display the highest score or 0 if no scores yet
+  const topScore = highScores.length > 0 ? highScores[0].score : 0;
+  highScoreElement.textContent = topScore;
+}
+
+// Add a new score to high scores
+function addHighScore(newScore) {
+  // Add the new score with a timestamp
+  const scoreEntry = {
+    score: newScore,
+    date: new Date().toLocaleDateString()
+  };
+  
+  highScores.push(scoreEntry);
+  
+  // Sort scores highest to lowest
+  highScores.sort((a, b) => b.score - a.score);
+  
+  // Keep only the top 10 scores
+  if (highScores.length > 10) {
+    highScores = highScores.slice(0, 10);
+  }
+  
+  // Save to local storage
+  saveHighScores();
+  
+  // Update the high score display
+  updateHighScoreDisplay();
+}
+
+// Update the leaderboard display
+function updateLeaderboard() {
+  const leaderboardList = document.getElementById('leaderboardList');
+  if (!leaderboardList) return;
+  
+  // Clear existing scores
+  leaderboardList.innerHTML = '';
+  
+  // No scores yet
+  if (highScores.length === 0) {
+    const emptyItem = document.createElement('li');
+    emptyItem.textContent = 'No scores yet!';
+    leaderboardList.appendChild(emptyItem);
+    return;
+  }
+  
+  // Add each score to the list
+  highScores.forEach((scoreEntry, index) => {
+    const item = document.createElement('li');
+    item.className = 'score-item';
+    item.innerHTML = `
+      <span class="score-rank">${index + 1}</span>
+      <span class="score-value">${scoreEntry.score}</span>
+      <span class="score-date">${scoreEntry.date}</span>
+    `;
+    leaderboardList.appendChild(item);
+  });
 }
 
 function gameStart() {
@@ -575,6 +689,11 @@ function checkGameOver() {
     running = false;
     paused = false; // Ensure we're not paused when game is over
     
+    // Add score to high scores
+    if (score > 0) {
+      addHighScore(score);
+    }
+    
     // Play game over sound with error handling
     if (soundEnabled && gameOverSound) {
       try {
@@ -598,17 +717,26 @@ function displayGameOver() {
   ctx.font = "bold 50px Poppins";
   ctx.fillStyle = foodColor;
   ctx.textAlign = "center";
-  ctx.fillText("GAME OVER!", gameWidth / 2, gameHeight / 2 - 20);
+  ctx.fillText("GAME OVER!", gameWidth / 2, gameHeight / 2 - 40);
   
   // Show score
   ctx.font = "30px Poppins";
   ctx.fillStyle = snakeHeadColor;
-  ctx.fillText(`Score: ${score}`, gameWidth / 2, gameHeight / 2 + 30);
+  ctx.fillText(`Score: ${score}`, gameWidth / 2, gameHeight / 2 + 10);
+  
+  // Show high score status
+  let scoreMessage = "Try again to beat the high score!";
+  if (highScores.length > 0 && score >= highScores[0].score) {
+    scoreMessage = "New High Score!";
+    ctx.fillStyle = "#FFD700"; // Gold color for high score
+  }
+  ctx.font = "20px Poppins";
+  ctx.fillText(scoreMessage, gameWidth / 2, gameHeight / 2 + 50);
   
   // Show restart instruction
   ctx.font = "20px Poppins";
   ctx.fillStyle = "white";
-  ctx.fillText("Press Reset to play again", gameWidth / 2, gameHeight / 2 + 70);
+  ctx.fillText("Press Reset to play again", gameWidth / 2, gameHeight / 2 + 90);
 }
 
 function resetGame() {

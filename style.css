@@ -104,32 +104,176 @@ body {
   transition: border 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
-/* Score display with modern styling */
-.scoreContainer {
+/* Game info container - holds score, high score, and leaderboard button */
+.game-info-container {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
   margin-bottom: 20px;
+  gap: 20px;
+}
+
+/* Score display with modern styling */
+.scoreContainer, .highScoreContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
   background-color: var(--instruction-bg);
-  padding: 10px 25px;
   border-radius: 25px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s ease;
+  min-width: 160px;
+  text-align: center;
+  height: 44px; /* Match button height */
 }
 
-.scoreLabel {
-  font-size: 1.5rem;
+.scoreLabel, .highScoreLabel {
+  font-size: 1.2rem;
   margin-right: 10px;
   color: var(--score-label);
   transition: color 0.3s ease;
 }
 
-#score {
-  font-size: 2rem;
+#score, #highScore {
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--score-value);
   text-shadow: 0 0 10px var(--title-shadow);
   transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Leaderboard Button */
+.leaderboardBtn {
+  background-color: var(--button-bg);
+  color: var(--button-color);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  height: 44px; /* Fixed height to match other elements */
+}
+
+.leaderboardBtn:hover {
+  background-color: var(--button-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.leaderboardBtn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Modal Styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  position: relative;
+  background-color: var(--container-bg);
+  margin: 10% auto;
+  padding: 25px;
+  border: 2px solid var(--board-border);
+  border-radius: 15px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 0 25px var(--title-shadow);
+  animation: modalFadeIn 0.3s;
+  transition: background-color 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.close-modal {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  color: var(--text-color);
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-modal:hover {
+  color: var(--button-bg);
+}
+
+/* Leaderboard styling */
+.leaderboardTitle {
+  color: var(--score-label);
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  text-align: center;
+  transition: color 0.3s ease;
+  text-shadow: 0 0 10px var(--title-shadow);
+}
+
+.leaderboardList {
+  list-style-position: inside;
+  padding: 0;
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+.score-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.score-item:hover {
+  transform: translateX(5px);
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.score-rank {
+  font-weight: bold;
+  min-width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--button-bg);
+  color: var(--button-color);
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.score-value {
+  font-weight: bold;
+  color: var(--score-value);
+  font-size: 1.3rem;
+  flex-grow: 1;
+}
+
+.score-date {
+  font-size: 0.9rem;
+  opacity: 0.8;
 }
 
 /* Control buttons container */
@@ -225,6 +369,17 @@ body {
     width: 100% !important;
     height: auto !important;
     aspect-ratio: 1 / 1;
+  }
+  
+  .game-info-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .scoreContainer, .highScoreContainer, .leaderboardBtn {
+    width: 80%;
+    max-width: 250px;
   }
 }
 

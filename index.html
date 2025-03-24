@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐍</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐍</text></svg>">
 </head>
 <body>
   <div id="gameContainer">
@@ -24,10 +24,34 @@
       </div>
     </div>
     
-    <!-- Score display with label -->
-    <div class="scoreContainer">
-      <span class="scoreLabel">SCORE:</span>
-      <div id="score">0</div>
+    <div class="game-info-container">
+      <!-- Score display with label -->
+      <div class="scoreContainer">
+        <span class="scoreLabel">SCORE:</span>
+        <div id="score">0</div>
+      </div>
+      
+      <!-- High Score display -->
+      <div class="highScoreContainer">
+        <span class="highScoreLabel">HIGHSCORE:</span>
+        <div id="highScore">0</div>
+      </div>
+      
+      <!-- Leaderboard button -->
+      <button id="viewLeaderboard" class="leaderboardBtn">
+        Leaderboard
+      </button>
+    </div>
+    
+    <!-- Leaderboard Modal -->
+    <div id="leaderboardModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h3 class="leaderboardTitle">LEADERBOARD</h3>
+        <ol id="leaderboardList" class="leaderboardList">
+          <li>No scores yet!</li>
+        </ol>
+      </div>
     </div>
     
     <!-- Controls container -->
