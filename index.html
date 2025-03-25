@@ -3,65 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Neon Snake</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Snake Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="data:image/svg+xml,svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐍</text></svg>">
 </head>
 <body>
   <div id="gameContainer">
-    <h1 class="gameTitle">Neon Snake</h1>
+    <h1 class="gameTitle">Snake Game</h1>
     
-    <!-- Game board with overlay for game over -->
-    <div style="position: relative;">
-      <canvas id="gameBoard" width="500" height="500"></canvas>
-      <div id="gameOverOverlay" class="gameOverOverlay">
-        <h2 class="gameOverText">GAME OVER!</h2>
-        <p class="finalScore">Score: <span id="finalScore">0</span></p>
-        <button class="playAgainBtn">Play Again</button>
-      </div>
-    </div>
+    <!-- Game Board -->
+    <canvas id="gameBoard" width="500" height="500"></canvas>
     
+    <!-- Score Display -->
     <div class="game-info-container">
-      <!-- Score display with label -->
       <div class="scoreContainer">
         <span class="scoreLabel">SCORE:</span>
         <div id="score">0</div>
       </div>
       
-      <!-- High Score display -->
       <div class="highScoreContainer">
         <span class="highScoreLabel">HIGHSCORE:</span>
         <div id="highScore">0</div>
       </div>
       
-      <!-- Leaderboard button -->
       <button id="viewLeaderboard" class="leaderboardBtn">
         Leaderboard
       </button>
     </div>
     
-    <!-- Leaderboard Modal -->
-    <div id="leaderboardModal" class="modal">
-      <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h3 class="leaderboardTitle">LEADERBOARD</h3>
-        <ol id="leaderboardList" class="leaderboardList">
-          <li>No scores yet!</li>
-        </ol>
-      </div>
-    </div>
-    
-    <!-- Controls container -->
+    <!-- Controls -->
     <div class="controlsContainer">
       <button id="resetButton">Reset Game</button>
       <button id="soundToggle">🔊 Sound ON</button>
-      <button id="themeToggle"><span class="theme-icon">🌙</span> Dark</button>
+      <button id="themeToggle">🌙 Dark</button>
     </div>
     
-    <!-- Touch Controls for Mobile -->
+    <!-- Touch Controls -->
     <div class="touchControls">
       <div id="upBtn" class="touchBtn">↑</div>
       <div id="leftBtn" class="touchBtn">←</div>
@@ -69,10 +46,20 @@
       <div id="downBtn" class="touchBtn">↓</div>
     </div>
     
-    <!-- Game instructions -->
+    <!-- Instructions -->
     <div class="instructions">
-      <p>Use arrow keys or WASD to control the snake.</p>
-      <p>Press SPACE to pause the game.</p>
+      <p>Use arrow keys or WASD to control the snake. Press SPACE to pause.</p>
+    </div>
+  </div>
+  
+  <!-- Popup -->
+  <div id="leaderboardModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h3 class="leaderboardTitle">LEADERBOARD</h3>
+      <ol id="leaderboardList" class="leaderboardList">
+        <li>No scores yet!</li>
+      </ol>
     </div>
   </div>
   
