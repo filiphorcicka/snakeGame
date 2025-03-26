@@ -254,7 +254,43 @@ body {
   flex-grow: 1;
 }
 
-/* Responsive Design */
+
+.touchControls {
+  display: none; 
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 20px; 
+}
+
+.touchBtn {
+  background-color: rgba(125, 249, 255, 0.3);
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.1s ease;
+}
+
+.touchBtn:active {
+  background-color: var(--button-bg);
+  transform: scale(0.95);
+}
+
+#upBtn { grid-column: 2; grid-row: 1; }
+#leftBtn { grid-column: 1; grid-row: 2; }
+#rightBtn { grid-column: 3; grid-row: 2; }
+#downBtn { grid-column: 2; grid-row: 3; }
+
+
+
 @media (max-width: 600px) {
   #gameContainer {
     padding: 15px;
@@ -275,16 +311,22 @@ body {
   }
   
   .touchControls {
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 5px;
-    width: 150px;
-    height: 150px;
-    margin: 10px auto 20px; /* Top, horizontal, bottom margin */
+    display: grid; 
+    width: 180px;
+    height: 180px;
+    margin: 15px auto 25px;
   }
 
   .touchBtn {
-    font-size: 1.8rem;
-    height: 45px;
+    background-color: rgba(125, 249, 255, 0.3); 
+    font-size: 2rem;
+    height: 50px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  .touchBtn:active {
+    background-color: var(--button-bg);
+    transform: scale(0.95);
   }
 }
