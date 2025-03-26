@@ -1,4 +1,3 @@
-/* Theme Variables */
 :root {
   /* Dark theme (default) */
   --bg-color: #16213e;
@@ -37,7 +36,7 @@
   --button-hover: #8A63D2;
 }
 
-/* Base Layout */
+
 * {
   margin: 0;
   padding: 0;
@@ -158,28 +157,74 @@ body {
   display: none;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: 5px;
-  width: 150px;
-  height: 150px;
-  margin-bottom: 15px;
+  gap: 12px;
+  width: 220px;
+  height: 220px;
+  margin: 0 auto 25px;
 }
 
 .touchBtn {
-  background-color: rgba(125, 249, 255, 0.2);
-  border-radius: 5px;
+  background-color: var(--button-bg);
+  opacity: 0.9;
+  border: 2px solid var(--button-color);
+  border-radius: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.5rem;
+  font-size: 2rem;
+  font-weight: bold;
   cursor: pointer;
+  user-select: none;
+  color: var(--button-color);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.15s ease;
 }
 
-#upBtn { grid-column: 2; grid-row: 1; }
-#leftBtn { grid-column: 1; grid-row: 2; }
-#rightBtn { grid-column: 3; grid-row: 2; }
-#downBtn { grid-column: 2; grid-row: 3; }
+.touchBtn:active {
+  opacity: 1;
+  transform: scale(0.92);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
 
-/* Leaderboard Modal */
+
+#upBtn {
+  grid-column: 2;
+  grid-row: 1;
+  border-radius: 15px 15px 8px 8px;
+}
+
+#leftBtn {
+  grid-column: 1;
+  grid-row: 2;
+  border-radius: 15px 8px 8px 15px;
+}
+
+#rightBtn {
+  grid-column: 3;
+  grid-row: 2;
+  border-radius: 8px 15px 15px 8px;
+}
+
+#downBtn {
+  grid-column: 2;
+  grid-row: 3;
+  border-radius: 8px 8px 15px 15px;
+}
+
+
+#upBtn::after { content: "↑"; font-size: 2.2rem; }
+#leftBtn::after { content: "←"; font-size: 2.2rem; }
+#rightBtn::after { content: "→"; font-size: 2.2rem; }
+#downBtn::after { content: "↓"; font-size: 2.2rem; }
+
+
+[data-theme="light"] .touchBtn {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  border-width: 2px;
+  opacity: 1;
+}
+
+
 .modal {
   display: none;
   position: fixed;
@@ -255,42 +300,11 @@ body {
 }
 
 
-.touchControls {
-  display: none; 
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 10px;
-  width: 200px;
-  height: 200px;
-  margin: 0 auto 20px; 
+.instructions-mobile {
+  display: none;
 }
 
-.touchBtn {
-  background-color: rgba(125, 249, 255, 0.3);
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.8rem;
-  font-weight: bold;
-  cursor: pointer;
-  user-select: none;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  transition: all 0.1s ease;
-}
-
-.touchBtn:active {
-  background-color: var(--button-bg);
-  transform: scale(0.95);
-}
-
-#upBtn { grid-column: 2; grid-row: 1; }
-#leftBtn { grid-column: 1; grid-row: 2; }
-#rightBtn { grid-column: 3; grid-row: 2; }
-#downBtn { grid-column: 2; grid-row: 3; }
-
-
-
+/* Responsive Design */
 @media (max-width: 600px) {
   #gameContainer {
     padding: 15px;
@@ -311,22 +325,18 @@ body {
   }
   
   .touchControls {
-    display: grid; 
+    display: grid;
     width: 180px;
     height: 180px;
     margin: 15px auto 25px;
   }
 
-  .touchBtn {
-    background-color: rgba(125, 249, 255, 0.3); 
-    font-size: 2rem;
-    height: 50px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  /* Switch instruction text */
+  .instructions-desktop {
+    display: none;
   }
   
-  .touchBtn:active {
-    background-color: var(--button-bg);
-    transform: scale(0.95);
+  .instructions-mobile {
+    display: block;
   }
 }
