@@ -193,7 +193,7 @@ function createFood() {
     Xfood = randomFood(0, gameWidth - unitSize);
     Yfood = randomFood(0, gameHeight - unitSize);
 
-    // Food isn't on snake
+    // Food isn't behind snake 
     let foodOnSnake = snake.some(segment => segment.x === Xfood && segment.y === Yfood);
     if (!foodOnSnake) foodCreated = true;
   }
